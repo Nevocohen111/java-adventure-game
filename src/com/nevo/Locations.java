@@ -1,5 +1,6 @@
 package com.nevo;
 
+import javax.swing.plaf.metal.MetalIconFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,9 +13,13 @@ public class Locations implements Map<Integer,Location> {
     private static Map<Integer,Location> locations = new HashMap<>();
 
     public static void main(String[] args) {
-        try(FileWriter writer = new FileWriter("locations.txt")) {
+        try(FileWriter writer = new FileWriter("locations.txt");
+            FileWriter writer2 = new FileWriter("directions.txt")) {
             for(Location location : locations.values()) {
-                writer.write(location.getLocationId()+ ", " +location.getDescription()+ ", " + location.getExits() + "\n");
+                writer.write(location.getLocationId()+ ", " +location.getDescription()+ "\n");
+                for(String direction : location.getExits().keySet()) {
+                    writer2.write(location.getLocationId()+ ", " +direction+ ", " +location.getExits().get(direction)+ "\n");
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
