@@ -1,38 +1,31 @@
 package com.nevo;
 
-import javax.swing.text.html.HTML;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Location {
-    private final int locationId;
-    private final String description;
-    private final Map<String, Integer> exits;
-
-
-
+public record Location(int locationId, String description, Map<String, Integer> exits) {
     public Location(int locationId, String description, Map<String, Integer> exits) {
         this.locationId = locationId;
         this.description = description;
-        if(exits != null)
-        this.exits = new HashMap<>(exits);
-        else this.exits = new HashMap<>();
+        if (exits != null)
+            this.exits = new LinkedHashMap<>(exits);
+        else this.exits = new LinkedHashMap<>();
         this.exits.put("Q", 0);
     }
 
-    public int getLocationId() {
+    @Override
+    public int locationId() {
         return locationId;
     }
 
-    public String getDescription() {
-        return description;
+
+
+    @Override
+    public Map<String, Integer> exits() {
+        return new LinkedHashMap<>(exits);
     }
 
-    public Map<String, Integer> getExits() {
-        return new HashMap<>(exits);
-    }
-
-    public void addExit(String direction, int location) {
+    protected void addExit(String direction, int location) {
         exits.put(direction, location);
     }
 }
