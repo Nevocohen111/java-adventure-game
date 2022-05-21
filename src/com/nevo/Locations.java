@@ -5,9 +5,6 @@ package com.nevo;
 import java.io.*;
 import java.util.*;
 
-/**
- * Created by timbuchalka on 2/04/2016.
- */
 public class Locations implements Map<Integer, Location> {
     private static Map<Integer, Location> locations = new LinkedHashMap<>();
 
@@ -20,7 +17,6 @@ public class Locations implements Map<Integer, Location> {
     }
 
     static {
-
         try(ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
            boolean eof = false;
               while(!eof){
