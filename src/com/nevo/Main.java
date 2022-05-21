@@ -43,7 +43,7 @@ public class Main {
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            System.out.println("You have won!");
+                            System.out.println("Farewell!");
                             System.exit(0);
                         }
                     }, 1000);

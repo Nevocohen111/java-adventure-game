@@ -28,7 +28,31 @@ public class Locations implements Map<Integer,Location> {
     }
 
     static {
-        try(BufferedReader reader = new BufferedReader (new FileReader("locations_big.txt"))) {
+        try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
+            boolean eof = false;
+            while (!eof) {
+                try{
+                    Map<String, Integer> exits = new LinkedHashMap<>();
+                    int loc = in.readInt();
+                    String description = in.readUTF();
+                    int numExits = in.readInt();
+                    System.out.println("Read location " + loc + " : " + description);
+                    System.out.println("Read exits " + numExits + " : " + " exits.");
+                    for (int i = 0; i < numExits; i++) {
+                        String direction = in.readUTF();
+                        int location = in.readInt();
+                        exits.put(direction, location);
+                        System.out.println("\t\t" + direction + " : " + location);
+                    }
+                    locations.put(loc, new Location(loc, description, exits));
+                }catch (EOFException e) {
+                    eof = true;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("IOException: " + e.getMessage());
+        }
+     /*   try(BufferedReader reader = new BufferedReader (new FileReader("locations_big.txt"))) {
             String input;
             while((input = reader.readLine()) != null) {
                  String[] parts = input.split(", ");
@@ -58,7 +82,7 @@ public class Locations implements Map<Integer,Location> {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+        }*/
     }
 
     @Override
