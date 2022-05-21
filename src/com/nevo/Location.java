@@ -1,9 +1,11 @@
 package com.nevo;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public record Location(int locationId, String description, Map<String, Integer> exits) {
+public record Location(int locationId, String description, Map<String, Integer> exits) implements Serializable {
+    private static final long serialVersionUID = 1L;
     public Location(int locationId, String description, Map<String, Integer> exits) {
         this.locationId = locationId;
         this.description = description;
