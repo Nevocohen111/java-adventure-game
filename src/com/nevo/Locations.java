@@ -47,6 +47,37 @@ public class Locations implements Map<Integer,Location> {
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
         }
+     /*   try(BufferedReader reader = new BufferedReader (new FileReader("locations_big.txt"))) {
+            String input;
+            while((input = reader.readLine()) != null) {
+                 String[] parts = input.split(", ");
+                 int locationId = Integer.parseInt(parts[0]);
+                 String description = parts[1];
+                System.out.println("imported location " + locationId + ":" + description);
+                 Map<String,Integer> exits = new HashMap<>();
+                 locations.put(locationId, new Location(locationId,description,exits));
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //now read the exists
+        try (BufferedReader reader = new BufferedReader(new FileReader("directions_big.txt"))) {
+            String input;
+            while((input = reader.readLine()) != null) {
+                String[] data = input.split(", ");
+                int loc = Integer.parseInt(data[0]);
+                String direction = data[1];
+                int destination = Integer.parseInt(data[2]);
+                System.out.println(loc+ ":" + direction + ":" + destination);
+                Location location  = locations.get(loc);
+                location.addExit(direction,destination);
+         }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }*/
     }
 
     @Override
