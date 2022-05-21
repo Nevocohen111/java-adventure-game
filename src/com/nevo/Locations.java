@@ -8,29 +8,44 @@ public class Locations implements Map<Integer,Location> {
     private static final Map<Integer,Location> locations = new LinkedHashMap<>();
 
     public static void main(String[] args) throws IOException {
-        try  (ObjectOutputStream out = new ObjectOutputStream( new BufferedOutputStream(new FileOutputStream("locations.dat")))) {
-            for(Location location : locations.values()) {
-                   out.writeObject(location);
-                    }
+        try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("locations.txt")))) {
+            for (Location location : locations.values()) {
+                out.writeInt(location.locationId());
+                out.writeUTF(location.description());
+                for (String direction : location.exits().keySet()) {
+                    out.writeUTF(direction);
+                    out.writeInt(location.exits().get(direction));
+                    System.out.println("direction: " + direction + " location: " + location.exits().get(direction));
                 }
             }
 
+        }
+    }
 
     static {
-        try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
+        try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream("locations.txt")))) {
             boolean eof = false;
             while (!eof) {
                 try{
-                    Location location = (Location)in.readObject();
-                    System.out.println("read location: " + location+" : "+location.description());
-                    System.out.println("Found "+location.exits().size()+" exits");
-                    locations.put(location.locationId(),location);
+                    Map<String, Integer> exits = new LinkedHashMap<>();
+                    int loc = in.readInt();
+                    String description = in.readUTF();
+                    int numExits = in.readInt();
+                    System.out.println("Read location " + loc + " : " + description);
+                    System.out.println("Read exits " + numExits + " : " + " exits.");
+                    for (int i = 0; i < numExits; i++) {
+                        String direction = in.readUTF();
+                        int location = in.readInt();
+                        exits.put(direction, location);
+                        System.out.println("\t\t" + direction + " : " + location);
+                    }
+                    locations.put(loc, new Location(loc, description, exits));
                 }catch (EOFException e) {
                     eof = true;
                 }
             }
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Exception: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("IOException: " + e.getMessage());
         }
     }
 

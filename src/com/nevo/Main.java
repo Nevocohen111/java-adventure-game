@@ -3,7 +3,7 @@ package com.nevo;
 import java.util.*;
 
 public class Main {
-    private static final Locations locations = new Locations();
+    private static Locations locations = new Locations();
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
