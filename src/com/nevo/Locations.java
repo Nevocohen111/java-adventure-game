@@ -1,85 +1,60 @@
 package com.nevo;
 
 
+
 import java.io.*;
 import java.util.*;
 
-public class Locations implements Map<Integer,Location> {
-    private static final Map<Integer,Location> locations = new LinkedHashMap<>();
+/**
+ * Created by timbuchalka on 2/04/2016.
+ */
+public class Locations implements Map<Integer, Location> {
+    private static Map<Integer, Location> locations = new LinkedHashMap<>();
 
     public static void main(String[] args) throws IOException {
-        try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("locations.txt")))) {
-            for (Location location : locations.values()) {
-                out.writeInt(location.locationId());
-                out.writeUTF(location.description());
-                for (String direction : location.exits().keySet()) {
-                    out.writeUTF(direction);
-                    out.writeInt(location.exits().get(direction));
-                    System.out.println("direction: " + direction + " location: " + location.exits().get(direction));
-                }
-            }
-
-        }
+      try(ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("locations.dat")))){
+          for(Location location : locations.values()){
+              out.writeObject(location);
+          }
+      }
     }
 
     static {
-        try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream("locations.txt")))) {
-            boolean eof = false;
-            while (!eof) {
-                try{
-                    Map<String, Integer> exits = new LinkedHashMap<>();
-                    int loc = in.readInt();
-                    String description = in.readUTF();
-                    int numExits = in.readInt();
-                    System.out.println("Read location " + loc + " : " + description);
-                    System.out.println("Read exits " + numExits + " : " + " exits.");
-                    for (int i = 0; i < numExits; i++) {
-                        String direction = in.readUTF();
-                        int location = in.readInt();
-                        exits.put(direction, location);
-                        System.out.println("\t\t" + direction + " : " + location);
-                    }
-                    locations.put(loc, new Location(loc, description, exits));
-                }catch (EOFException e) {
-                    eof = true;
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("IOException: " + e.getMessage());
-        }
-     /*   try(BufferedReader reader = new BufferedReader (new FileReader("locations_big.txt"))) {
-            String input;
-            while((input = reader.readLine()) != null) {
-                 String[] parts = input.split(", ");
-                 int locationId = Integer.parseInt(parts[0]);
-                 String description = parts[1];
-                System.out.println("imported location " + locationId + ":" + description);
-                 Map<String,Integer> exits = new HashMap<>();
-                 locations.put(locationId, new Location(locationId,description,exits));
-            }
 
-        } catch (IOException e) {
+        try(ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
+           boolean eof = false;
+              while(!eof){
+                try{
+                     Location location = (Location) in.readObject();
+                     locations.put(location.getLocationID(), location);
+                }catch(EOFException e){
+                     eof = true;
+                }
+              }
+
+        } catch(IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        //now read the exists
-        try (BufferedReader reader = new BufferedReader(new FileReader("directions_big.txt"))) {
+
+        // Now read the exits
+        try (BufferedReader dirFile = new BufferedReader(new FileReader("directions_big.txt"))) {
             String input;
-            while((input = reader.readLine()) != null) {
-                String[] data = input.split(", ");
+            while((input = dirFile.readLine()) != null) {
+                String[] data = input.split(",");
                 int loc = Integer.parseInt(data[0]);
                 String direction = data[1];
                 int destination = Integer.parseInt(data[2]);
-                System.out.println(loc+ ":" + direction + ":" + destination);
-                Location location  = locations.get(loc);
-                location.addExit(direction,destination);
-         }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }*/
-    }
 
+                System.out.println(loc + ": " + direction + ": " + destination);
+                Location location = locations.get(loc);
+                location.addExit(direction, destination);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public int size() {
         return locations.size();
@@ -107,7 +82,7 @@ public class Locations implements Map<Integer,Location> {
 
     @Override
     public Location put(Integer key, Location value) {
-        return locations.put(key,value);
+        return locations.put(key, value);
     }
 
     @Override
@@ -123,6 +98,7 @@ public class Locations implements Map<Integer,Location> {
     @Override
     public void clear() {
         locations.clear();
+
     }
 
     @Override

@@ -1,24 +1,38 @@
 package com.nevo;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public record Location(int locationId, String description, Map<String, Integer> exits) {
-    public Location(int locationId, String description, Map<String, Integer> exits) {
-        this.locationId = locationId;
+public class Location implements Serializable{
+    private final int locationID;
+    private final String description;
+    private final Map<String, Integer> exits;
+
+    private long serialVersionUID = 1L;
+
+    public Location(int locationID, String description, Map<String, Integer> exits) {
+        this.locationID = locationID;
         this.description = description;
-        if (exits != null)
-            this.exits = new LinkedHashMap<>(exits);
-        else this.exits = new LinkedHashMap<>();
+        if(exits != null) {
+            this.exits = new LinkedHashMap<String, Integer>(exits);
+        } else {
+            this.exits = new LinkedHashMap<String, Integer>();
+        }
         this.exits.put("Q", 0);
     }
 
-    @Override
-    public Map<String, Integer> exits() {
-        return new LinkedHashMap<>(exits);
+    public int getLocationID() {
+        return locationID;
     }
 
+    public String getDescription() {
+        return description;
+    }
 
+    public Map<String, Integer> getExits() {
+        return new LinkedHashMap<>(exits);
+    }
     protected void addExit(String direction, int location) {
         exits.put(direction, location);
     }
