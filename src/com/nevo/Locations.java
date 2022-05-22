@@ -1,56 +1,43 @@
 package com.nevo;
 
 
-
 import java.io.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class Locations implements Map<Integer, Location> {
-    private static Map<Integer, Location> locations = new LinkedHashMap<>();
+    private static final Map<Integer, Location> locations = new LinkedHashMap<>();
 
     public static void main(String[] args) throws IOException {
-      try(ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("locations.dat")))){
-          for(Location location : locations.values()){
-              out.writeObject(location);
-          }
-      }
+        Path locPath = FileSystems.getDefault().getPath("locations.dat");
+        try(ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(Files.newOutputStream(locPath)))) {
+            for(Location loc : locations.values()) {
+                os.writeObject(loc);
+            }
+        }
     }
 
     static {
-        try(ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
-           boolean eof = false;
-              while(!eof){
-                try{
-                     Location location = (Location) in.readObject();
-                     locations.put(location.getLocationID(), location);
-                }catch(EOFException e){
-                     eof = true;
+            Path locPath = FileSystems.getDefault().getPath("locations.dat");
+            try(ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(Files.newInputStream(locPath)))) {
+                boolean eof = false;
+                while(!eof) {
+                    try {
+                        Location loc = (Location) in.readObject();
+                        locations.put(loc.getLocationID(), loc);
+                    } catch (EOFException e) {
+                        eof = true;
+                    } catch (ClassNotFoundException e) {
+                        System.out.println("Class not found exception");
+                    }
                 }
-              }
-
-        } catch(IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        // Now read the exits
-        try (BufferedReader dirFile = new BufferedReader(new FileReader("directions_big.txt"))) {
-            String input;
-            while((input = dirFile.readLine()) != null) {
-                String[] data = input.split(",");
-                int loc = Integer.parseInt(data[0]);
-                String direction = data[1];
-                int destination = Integer.parseInt(data[2]);
-
-                System.out.println(loc + ": " + direction + ": " + destination);
-                Location location = locations.get(loc);
-                location.addExit(direction, destination);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
+
     @Override
     public int size() {
         return locations.size();
