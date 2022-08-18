@@ -1,1 +1,0 @@
-Follow the instructions in order to use to program in the correct way,Enjoy!
